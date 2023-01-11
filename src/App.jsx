@@ -1,12 +1,36 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+import { useEffect } from 'react'
 import './App.css'
 import Question from './components/Question'
 
 function App() {
   const [started, setStarted] = useState(false)
-  const [triviaQuestions, setTriviaQuestions] = useState([])
+  const [data, setData] = useState([])
+  const [questions, setQuestions] = useState([])
+  const [fillerAnswers, setFillerAnswers] = useState([])
+  const [tenzies, setTenzies] = useState(false)
 
+
+  useEffect(() => {
+    fetch("https://opentdb.com/api.php?amount=10&category=18")
+        .then(res => res.json())
+        .then(data => setData(data.results))
+        setQuestions(data.map(elem => {
+          return ({
+          isHeld: false,
+          question: elem.question,
+          correct_answer: elem.correct_answer    
+        })
+        }))
+        setFillerAnswers(data.map(elem => elem.incorrect_answers).reduce((acc, cur)=> cur.concat(acc), []))
+}, [])
+
+console.log(fillerAnswers)
+
+
+// .question  .incorrect_answers (array) .correct_answer
+
+ 
 
   function startGame() {
     setStarted(true)
@@ -18,16 +42,7 @@ function App() {
       { started ? 
              <div>
               <h1> Here's the trivia!</h1>
-             <Question />
-             <Question />
-             <Question />
-             <Question />
-             <Question />
-             <Question />
-             <Question />
-             <Question />
-             <Question />
-             <Question />
+             <Question />          
               </div>
               :
              <div>
