@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import './App.css'
 import Answer from './components/Answer'
+//translate the html code
 import he from 'he'
 
 function App() {
