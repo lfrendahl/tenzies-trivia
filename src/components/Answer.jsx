@@ -1,9 +1,9 @@
 import React from 'react'
 
-export default function Question() {
+export default function Answer(props) {
     return(
-        <div>
-            <p> What is the biggest fishy ever?</p>
+        <div className='answer-box'>
+            <h4> {props.value} </h4>
         </div>
     )
 }
