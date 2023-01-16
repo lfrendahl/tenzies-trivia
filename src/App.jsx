@@ -29,7 +29,6 @@ function App() {
 useEffect(() => {
   setQuestions(data.map(elem => {
     return ({
-    isHeld: false,
     question: he.decode(elem.question),
     correct_answer: he.decode(elem.correct_answer)    
   })
@@ -40,11 +39,20 @@ useEffect(() => {
   setFillerAnswers(data.map(elem => (elem.incorrect_answers)).reduce((acc, cur)=> cur.concat(acc), []))
 }, [data])
 
+useEffect(() => {
+  console.log('count has changed and we need to update the answers')
+  //setCurrentAnswers(allNewButtons())
+}, [count])
 
 //generate a set of 10 answers that starts with the correct answer and then adds 10 random answers.
 function gatherAnswers() {
   let answerChoices = []
-  answerChoices.push(questions[0].correct_answer)
+  if (currentAnswers.some(elem => elem.correct)) {
+    console.log('one of these is right')
+   // let oldCorrect = currentAnswers.filter(elem => elem.correct)
+   // answerChoices.push(oldCorrect)
+  }
+  answerChoices.push(questions[count].correct_answer)
   while (answerChoices.length <= 9) {
       const randomNumber = Math.floor(Math.random() * fillerAnswers.length)
       answerChoices.push(he.decode(fillerAnswers[randomNumber]))
@@ -55,18 +63,16 @@ function gatherAnswers() {
 //makes it so the correct answer is not always first
 function shuffleAnswers(answerChoices) {
   let choices = [...answerChoices]
-  console.log(choices)
   let shuffled = choices
   .map(value => ({ value, sort: Math.random() }))
   .sort((a, b) => a.sort - b.sort)
   .map(({ value }) => value)
-  return choices
+  return shuffled
 }
 
 //makes answers into objects that can hold the state of being correct
-function allNewButtons(answerChoices) {
+function allNewButtons() {
   let choices = shuffleAnswers(gatherAnswers())
-  console.log(`the choices are ${choices}`)
   const newArray = []
   for(let i = 0; i < 10; i++) {
       const newAnswerObject = {
@@ -85,17 +91,34 @@ function allNewButtons(answerChoices) {
     setCurrentAnswers(allNewButtons())
   }
 
-  function checkAnswer() {
-    console.log('checking')
+  //If the answer is wrong repopulate the answers
+  function checkAnswer(value) {
+    console.log(`checking for ${questions[count].correct_answer} and ${value}`)
+    if (questions[count].correct_answer != value) {
+      console.log('wrong')
+      setCurrentAnswers(allNewButtons())
+    } else {
+        setCurrentAnswers(prevAnswer => prevAnswer.map(answer => {
+          return answer.value === questions[count].correct_answer ?
+            {...answer, correct: true} :
+            answer
+        }))
+        console.log(`answer set as correct now all choices are ${currentAnswers}`)
+        setCount(prevCount => prevCount + 1)
+    }
   }
+
+
+
   const answerElements = currentAnswers.map((answer) => (
-    <Answer key={answer.id} value={answer.value} correct={answer.correct} checkAnswer={checkAnswer} />
+    <Answer key={answer.id} value={answer.value} correct={answer.correct} checkAnswer={() =>checkAnswer(answer.value)} />
 ))
 
-console.log(answerElements)
-/*const answerElements = currentAnswers.map((answer) => (
-  <Answer key={answer.id} value={answer.value} correct={answer.correct} checkAnswer={() => checkAnswer(die.id)} />
-))*/
+
+
+
+
+
 
 
   return (
@@ -114,7 +137,7 @@ console.log(answerElements)
                 <h1>Tenzies Trivia </h1>
                 <h3>May your questions be easy and your clicks be fast.</h3>
                 <p> Answer 10 questions right to collect all ten trivia points and win Tenzies Trivia! </p>
-                <button onClick={startGame}> Start Quiz </button> 
+                <button className='start-button' onClick={startGame}>Start Quiz </button> 
              </div>
       }       
     </main>

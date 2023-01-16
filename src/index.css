@@ -55,9 +55,14 @@ button {
   font-weight: 500;
   font-family: inherit;
   color:  rgba(255, 255, 255, 0.87);
-  background-color:#930B54;
   cursor: pointer;
   transition: border-color 0.25s;
+}
+
+.start-button {
+  line-height: 1rem;
+  background-color:#930B54;
+  font-weight: 700;
 }
 button:hover {
   border-color: #560E35;
