@@ -40,27 +40,64 @@ useEffect(() => {
 }, [data])
 
 useEffect(() => {
-  console.log('count has changed and we need to update the answers')
-  //setCurrentAnswers(allNewButtons())
+ if (count > 0 ) {
+  newQuestionUpdate(newQuestionAnswers)
+ }
 }, [count])
 
-//generate a set of 10 answers that starts with the correct answer and then adds 10 random answers.
-function gatherAnswers() {
-  let answerChoices = []
-  if (currentAnswers.some(elem => elem.correct)) {
-    console.log('one of these is right')
-   // let oldCorrect = currentAnswers.filter(elem => elem.correct)
-   // answerChoices.push(oldCorrect)
-  }
-  answerChoices.push(questions[count].correct_answer)
-  while (answerChoices.length <= 9) {
-      const randomNumber = Math.floor(Math.random() * fillerAnswers.length)
-      answerChoices.push(he.decode(fillerAnswers[randomNumber]))
-  }
-  return shuffleAnswers(answerChoices)
+function consolecount() {
+  console.log(`count is ${count}`)
 }
 
-//makes it so the correct answer is not always first
+//generate an array of 10 answers that starts with the correct answer and then adds 10 random answers.
+function gatherAnswers() {
+  let answerChoices = []
+  answerChoices.push(questions[count].correct_answer)
+    while (answerChoices.length <= 9) {
+        const randomNumber = Math.floor(Math.random() * fillerAnswers.length)
+        answerChoices.push(he.decode(fillerAnswers[randomNumber]))
+    }
+    return shuffleAnswers(answerChoices)
+  }
+
+//generate an array of answer choices that takes in account number of correct
+  function newQuestionAnswers() {
+    console.log(`current count at newQuestionAnsers is ${count}`)
+    let answerChoices = []
+    answerChoices.push(questions[count].correct_answer)
+    let correct = currentAnswers.filter(answer => answer.correct === true)
+    let numberCorrect = correct.length
+    if (numberCorrect > 0) {
+          while (answerChoices.length <= 9 - numberCorrect) {
+          const randomNumber = Math.floor(Math.random() * fillerAnswers.length)
+          answerChoices.push(he.decode(fillerAnswers[randomNumber]))
+      }
+    } else {
+         while (answerChoices.length <= 9) {
+        const randomNumber = Math.floor(Math.random() * fillerAnswers.length)
+        answerChoices.push(he.decode(fillerAnswers[randomNumber]))
+    }
+    }
+      let shuffled = shuffleAnswers(answerChoices)
+      console.log(`shuffled array is ${shuffled}`)
+      return shuffled
+    }
+
+  function newQuestionUpdate() {
+    console.log('updating answers for new question')
+    let newValueArray = newQuestionAnswers()
+    console.log(newValueArray)
+    let pullThisOne = 0
+    setCurrentAnswers(prevAnswer => prevAnswer.map(object => {
+      pullThisOne++
+      return object.correct != true ?
+        {...object, value: newValueArray[pullThisOne]}  :
+        object
+    }))
+  }
+
+
+//shuffles an answer array so the correct answer is not always first
 function shuffleAnswers(answerChoices) {
   let choices = [...answerChoices]
   let shuffled = choices
@@ -91,35 +128,27 @@ function allNewButtons() {
     setCurrentAnswers(allNewButtons())
   }
 
+ 
   //If the answer is wrong repopulate the answers
   function checkAnswer(value) {
     console.log(`checking for ${questions[count].correct_answer} and ${value}`)
     if (questions[count].correct_answer != value) {
       console.log('wrong')
-      setCurrentAnswers(allNewButtons())
+          //keep any right and generate all new wrong
     } else {
         setCurrentAnswers(prevAnswer => prevAnswer.map(answer => {
           return answer.value === questions[count].correct_answer ?
-            {...answer, correct: true} :
+            {...answer, correct: !answer.correct} :
             answer
         }))
-        console.log(`answer set as correct now all choices are ${currentAnswers}`)
-        setCount(prevCount => prevCount + 1)
+        setCount(prevCount => prevCount + 1)      
     }
   }
-
-
 
   const answerElements = currentAnswers.map((answer) => (
     <Answer key={answer.id} value={answer.value} correct={answer.correct} checkAnswer={() =>checkAnswer(answer.value)} />
 ))
-
-
-
-
-
-
-
+  
 
   return (
     <main>
