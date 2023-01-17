@@ -21,7 +21,7 @@ function App() {
 
   //Get the data and use it to set the questions objects and the filler answers
   useEffect(() => {
-    fetch("https://opentdb.com/api.php?amount=10&category=18&type=multiple")
+    fetch("https://opentdb.com/api.php?amount=11&category=18&type=multiple")
         .then(res => res.json())
         .then(data => setData(data.results))
 }, [])
@@ -45,9 +45,10 @@ useEffect(() => {
  }
 }, [count])
 
-function consolecount() {
-  console.log(`count is ${count}`)
-}
+//Check for tenzies
+useEffect(() => {
+  setTenzies(currentAnswers.length == 10 && currentAnswers.every(answer => answer.correct === true))
+}, [currentAnswers])
 
 //generate an array of 10 answers that starts with the correct answer and then adds 10 random answers.
 function gatherAnswers() {
@@ -137,10 +138,11 @@ function allNewButtons() {
  
   //If the answer is wrong repopulate the answers
   function checkAnswer(value) {
+    if (!tenzies) {
     console.log(`checking for ${questions[count].correct_answer} and ${value}`)
     if (questions[count].correct_answer != value) {
       console.log('wrong')
-          //keep any right and generate all new wrong
+           newQuestionUpdate(newQuestionAnswers)
     } else {
         setCurrentAnswers(prevAnswer => prevAnswer.map(answer => {
           return answer.value === questions[count].correct_answer ?
@@ -149,6 +151,9 @@ function allNewButtons() {
         }))
         setCount(prevCount => prevCount + 1)      
     }
+  } else {
+           console.log('We have tenzies')
+  }
   }
 
   const answerElements = currentAnswers.map((answer) => (
@@ -161,10 +166,10 @@ function allNewButtons() {
       
       { started ? 
              <div>
-                <h1> Here's the trivia!</h1>
-                <h2>{questions[count].question}</h2>   
+              <h1> {tenzies ? 'You win' : 'Here\'s the trivia!'}</h1>
+                <h2>{tenzies ? 'Wow!' : questions[count].question}</h2>   
                 <div className='question-container'>    
-                  {answerElements}
+                  {tenzies ? 'Amazing' : answerElements}
                 </div>
               </div>
               :
