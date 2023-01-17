@@ -84,17 +84,23 @@ function gatherAnswers() {
     }
 
   function newQuestionUpdate() {
-    console.log('updating answers for new question')
     let newValueArray = newQuestionAnswers()
     console.log(newValueArray)
-    let pullThisOne = 0
-    setCurrentAnswers(prevAnswer => prevAnswer.map(object => {
-      pullThisOne++
-      return object.correct != true ?
-        {...object, value: newValueArray[pullThisOne]}  :
-        object
-    }))
+    setCurrentAnswers(prevAnswer => {
+      let updatedArray = []
+      let addingIndex = 0
+       for(let i=0; i<prevAnswer.length; i++) {
+         if (prevAnswer[i].correct === true) {
+          updatedArray.push({...prevAnswer[i]}) 
+         } else {
+          updatedArray.push({...prevAnswer[i], value: newValueArray[addingIndex]}) 
+          addingIndex++
+         }
+       }
+       return updatedArray
+    })
   }
+
 
 
 //shuffles an answer array so the correct answer is not always first
