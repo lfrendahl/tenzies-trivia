@@ -74,6 +74,12 @@ button:focus-visible {
 
 
 .question-container {
+  border: 2px solid green;
+  max-width: 900px;
+  height: 100px;
+}
+
+.answer-container {
   display: grid;
   grid-template: auto auto / repeat(5, 1fr);
   gap: 30px;
@@ -95,7 +101,7 @@ button:focus-visible {
 }
 
 .answer-box:hover {
-  border-color: #560E35;
+  border-color: transparent;
 }
 .answer-box:focus,
 .answer-box:focus-visible {

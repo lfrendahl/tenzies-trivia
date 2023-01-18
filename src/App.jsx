@@ -173,8 +173,10 @@ function allNewButtons() {
                     </div> : 
                         <div>
                         <h1>Here's the trivia!</h1>
-                        <h2>{questions[count].question}</h2>   
-                        <div className='question-container'>    
+                        <div className='question-container'>
+                          <h2>{questions[count].question}</h2>   
+                        </div>
+                        <div className='answer-container'>    
                           {answerElements}
                         </div>
                       </div> 
