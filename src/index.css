@@ -74,9 +74,8 @@ button:focus-visible {
 
 
 .question-container {
-  border: 2px solid green;
   max-width: 900px;
-  height: 100px;
+  height: 50px;
 }
 
 .answer-container {
