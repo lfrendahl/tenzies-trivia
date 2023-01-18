@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import './App.css'
 import Answer from './components/Answer'
+//confetti on win
+import Confetti from 'react-confetti'
 //translate the html code
 import he from 'he'
 
@@ -17,7 +19,6 @@ function App() {
   //an array of the right answer and all the wrong answers, shuffled and turned into objects
   const [currentAnswers, setCurrentAnswers] = useState([])
   const [tenzies, setTenzies] = useState(false)
-
 
   //Get the data and use it to set the questions objects and the filler answers
   useEffect(() => {
@@ -63,7 +64,6 @@ function gatherAnswers() {
 
 //generate an array of answer choices that takes in account number of correct
   function newQuestionAnswers() {
-    console.log(`current count at newQuestionAnsers is ${count}`)
     let answerChoices = []
     answerChoices.push(questions[count].correct_answer)
     let correct = currentAnswers.filter(answer => answer.correct === true)
@@ -80,13 +80,11 @@ function gatherAnswers() {
     }
     }
       let shuffled = shuffleAnswers(answerChoices)
-      console.log(`shuffled array is ${shuffled}`)
       return shuffled
     }
 
   function newQuestionUpdate() {
     let newValueArray = newQuestionAnswers()
-    console.log(newValueArray)
     setCurrentAnswers(prevAnswer => {
       let updatedArray = []
       let addingIndex = 0
@@ -139,9 +137,7 @@ function allNewButtons() {
   //If the answer is wrong repopulate the answers
   function checkAnswer(value) {
     if (!tenzies) {
-    console.log(`checking for ${questions[count].correct_answer} and ${value}`)
     if (questions[count].correct_answer != value) {
-      console.log('wrong')
            newQuestionUpdate(newQuestionAnswers)
     } else {
         setCurrentAnswers(prevAnswer => prevAnswer.map(answer => {
@@ -151,9 +147,12 @@ function allNewButtons() {
         }))
         setCount(prevCount => prevCount + 1)      
     }
-  } else {
-           console.log('We have tenzies')
   }
+  }
+
+  function playAgain() {
+    setStarted(false)
+    setTenzies(false)
   }
 
   const answerElements = currentAnswers.map((answer) => (
@@ -165,13 +164,20 @@ function allNewButtons() {
     <main>
       
       { started ? 
-             <div>
-              <h1> {tenzies ? 'You win' : 'Here\'s the trivia!'}</h1>
-                <h2>{tenzies ? 'Wow!' : questions[count].question}</h2>   
-                <div className='question-container'>    
-                  {tenzies ? 'Amazing' : answerElements}
-                </div>
-              </div>
+             
+               tenzies ? 
+               <div>
+                    <Confetti />
+                    <h1>You win!!</h1>
+                    <button className='start-button' onClick={playAgain}>Play Again</button>
+                    </div> : 
+                        <div>
+                        <h1>Here's the trivia!</h1>
+                        <h2>{questions[count].question}</h2>   
+                        <div className='question-container'>    
+                          {answerElements}
+                        </div>
+                      </div> 
               :
              <div>
                 <h1>Tenzies Trivia </h1>
